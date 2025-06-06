@@ -15,6 +15,6 @@ def get_satellite_position(satellite, ts=None):
 
 if __name__ == "__main__":
     satellites = fetch_tle()
-    satellite = satellites["CALSPHERE 1"]  # Example satellite
+    satellite = satellites["ISS (ZARYA)"]  # Example satellite
     lat, lon, alt = get_satellite_position(satellite)
     print(f"ISS Position → Lat: {lat:.2f}, Lon: {lon:.2f}, Alt: {alt:.2f} km")
