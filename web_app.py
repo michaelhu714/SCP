@@ -1,7 +1,7 @@
 import streamlit as st 
 from tle_downloader import fetch_tle
 from collision_checker import check_close_approaches
-from visualizer import get_ground_tracks, plot_orbits_plotly
+from visualizer import get_ground_tracks, plot_orbits_plotly, plot_orbits_globe_plotly
 
 
 # configure page
@@ -14,7 +14,11 @@ st.title("Satellite Collision Predictor")
 num_sats = st.sidebar.slider("Number of satellites", min_value = 3, max_value = 15, value = 10)
 hours = st.sidebar.slider("Prediction window (hrs)", min_value = 1, max_value = 24, value = 1)
 check_collisions = st.sidebar.toggle("Check for close approaches")
+if check_collisions: 
+    km_threshold = st.sidebar.slider("Km threshold for close approaches", min_value = 1, max_value = 1000, value = 2)
 plot_orbits = st.sidebar.toggle("Plot satellite orbits")
+if plot_orbits: 
+    globe_view = st.sidebar.checkbox("Use 3D globe view")
 
 # main logic
 
@@ -25,17 +29,19 @@ if st.button("Run Prediction"):
 
     if plot_orbits: 
         st.subheader("Ground Track Visualization")
-        tracks = get_ground_tracks(subset_sats, hours)
-        globe = plot_orbits_plotly(tracks)
-        st.plotly_chart(globe, use_container_width=True)
+        tracks = get_ground_tracks(subset_sats, hours=hours)
+        if globe_view:
+            fig = plot_orbits_globe_plotly(tracks)
+        else:
+            fig = plot_orbits_plotly(tracks)
+        st.plotly_chart(fig, use_container_width=True)
         
     if check_collisions:
-        st.subheader("Potential Close Approaches")
-        warnings = check_close_approaches(subset_sats, hours=hours)
-        if warnings:
-            st.write("Detected close approaches:")
-            for t, s1, s2, d in warnings:
-                st.write(f" Time - {t} | {s1} & {s2} → {d:.2f} km")
-        else:
-            st.success("No close approaches found ")
+        warnings = check_close_approaches(subset_sats, hours)
+        if warnings: 
+            st.subheader("CLOSE APPROACHES DETECTED: ")
+            for t, s1, s2, d, threshold in warnings: 
+                st.subheader(f" - Time: {t}, Between: {s1} and {s2}, Distance: {d:.2f} km with close approach threshold of {threshold} km")
+        else: 
+            st.subheader("NO CLOSE APPRAOCHES DETECTED IN SELECTED WINDOW")
         

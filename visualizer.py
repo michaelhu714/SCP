@@ -58,4 +58,35 @@ def plot_orbits_plotly(tracks):
 
     return globe
 
+def plot_orbits_globe_plotly(tracks):
+    """
+    Plot ground tracks on a 3D globe using Plotly (orthographic projection).
+    Returns: go.Figure
+    """
+    globe = go.Figure()
 
+    for name, track in tracks.items():
+        globe.add_trace(go.Scattergeo(
+            lon=track["lons"],
+            lat=track["lats"],
+            mode="lines",
+            name=name,
+            line=dict(width=2),
+            showlegend=True
+        ))
+
+    globe.update_geos(
+        projection_type="orthographic",
+        showland=True, landcolor="rgb(230, 230, 230)",
+        showocean=True, oceancolor="lightblue",
+        showcoastlines=True, coastlinecolor="black",
+        showcountries=True, countrycolor="gray",
+    )
+
+    globe.update_layout(
+        title="Satellite Ground Tracks (3D Globe)",
+        margin={"r": 0, "t": 30, "l": 0, "b": 0},
+        height=700,
+    )
+
+    return globe
