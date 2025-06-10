@@ -1,8 +1,8 @@
 import streamlit as st 
 from tle_downloader import fetch_tle
 from collision_checker import check_close_approaches
-from visualizer import plot_satellite_orbits
-import matplotlib.pyplot as plt
+from visualizer import get_ground_tracks, plot_orbits_plotly
+
 
 # configure page
 
@@ -25,9 +25,9 @@ if st.button("Run Prediction"):
 
     if plot_orbits: 
         st.subheader("Ground Track Visualization")
-        #fig = plt.figure(figsize=(10, 5))
-        plot_satellite_orbits(subset_sats, hours=hours)
-        st.pyplot(plt.gcf())
+        tracks = get_ground_tracks(subset_sats, hours)
+        globe = plot_orbits_plotly(tracks)
+        st.plotly_chart(globe, use_container_width=True)
         
     if check_collisions:
         st.subheader("Potential Close Approaches")
