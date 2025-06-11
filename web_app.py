@@ -15,7 +15,7 @@ num_sats = st.sidebar.slider("Number of satellites", min_value = 3, max_value = 
 hours = st.sidebar.slider("Prediction window (hrs)", min_value = 1, max_value = 24, value = 1)
 check_collisions = st.sidebar.toggle("Check for close approaches")
 if check_collisions: 
-    km_threshold = st.sidebar.slider("Km threshold for close approaches", min_value = 1, max_value = 1000, value = 2)
+    threshold_km = st.sidebar.slider("Km threshold for close approaches", min_value = 1, max_value = 1000, value = 2)
 plot_orbits = st.sidebar.toggle("Plot satellite orbits")
 if plot_orbits: 
     globe_view = st.sidebar.checkbox("Use 3D globe view")
@@ -29,15 +29,15 @@ if st.button("Run Prediction"):
 
     if plot_orbits: 
         st.subheader("Ground Track Visualization")
-        tracks = get_ground_tracks(subset_sats, hours=hours)
+        tracks, positions = get_ground_tracks(subset_sats, hours=hours)
         if globe_view:
-            fig = plot_orbits_globe_plotly(tracks)
+            fig = plot_orbits_globe_plotly(tracks, positions)
         else:
-            fig = plot_orbits_plotly(tracks)
+            fig = plot_orbits_plotly(tracks, positions)
         st.plotly_chart(fig, use_container_width=True)
         
     if check_collisions:
-        warnings = check_close_approaches(subset_sats, hours)
+        warnings = check_close_approaches(subset_sats, hours=hours, threshold_km=threshold_km)
         if warnings: 
             st.subheader("CLOSE APPROACHES DETECTED: ")
             for t, s1, s2, d, threshold in warnings: 

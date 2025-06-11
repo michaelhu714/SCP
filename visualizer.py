@@ -13,18 +13,29 @@ def get_ground_tracks(satellites, hours=1, interval_minutes=10):
     times = [ts.utc((now.utc_datetime() + timedelta(minutes=m))) for m in range(0, hours * 60 + 1, interval_minutes)]
 
     tracks = {}
-
     for name, sat in satellites.items():
         lats, lons = [], []
         for time_stamp in times:
+            
             subpoint = wgs84.subpoint(sat.at(time_stamp))
             lats.append(subpoint.latitude.degrees)
             lons.append(subpoint.longitude.degrees)
         
         tracks[name] = {"lats": lats, "lons": lons}
-    return tracks
 
-def plot_orbits_plotly(tracks):
+    current_positions = {}
+
+    for name, sat in satellites.items():
+        ...
+        # Add current position
+        subpoint_now = wgs84.subpoint(sat.at(ts.now()))
+        current_positions[name] = {
+            "lat": subpoint_now.latitude.degrees,
+            "lon": subpoint_now.longitude.degrees,
+        }
+    return tracks, current_positions
+
+def plot_orbits_plotly(tracks, current_positions=None):
     """
     Plot ground tracks using Plotly (returns a go.Figure object).
     """
@@ -56,9 +67,19 @@ def plot_orbits_plotly(tracks):
         height=600,
     )
 
+    if current_positions:
+        for name, pos in current_positions.items():
+            globe.add_trace(go.Scattergeo(
+                lon=[pos["lon"]],
+                lat=[pos["lat"]],
+                mode="markers",
+                marker=dict(size=6, color="red"),
+                name=f"{name} (now)"
+            )) 
+
     return globe
 
-def plot_orbits_globe_plotly(tracks):
+def plot_orbits_globe_plotly(tracks, current_positions=None):
     """
     Plot ground tracks on a 3D globe using Plotly (orthographic projection).
     Returns: go.Figure
@@ -88,5 +109,15 @@ def plot_orbits_globe_plotly(tracks):
         margin={"r": 0, "t": 30, "l": 0, "b": 0},
         height=700,
     )
+
+    if current_positions:
+        for name, pos in current_positions.items():
+            globe.add_trace(go.Scattergeo(
+                lon=[pos["lon"]],
+                lat=[pos["lat"]],
+                mode="markers",
+                marker=dict(size=6, color="red"),
+                name=f"{name} (now)"
+            )) 
 
     return globe

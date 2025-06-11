@@ -14,7 +14,7 @@ def compute_distance_km(sat1, sat2, time):
 
     return np.linalg.norm(p1 - p2)
 
-def check_close_approaches(satellites, hours=1, interval_min=10, threshold_km= 1000.0):
+def check_close_approaches(satellites, hours, threshold_km, interval_min=10):
     ts = load.timescale()
     now = ts.now()
     # Create a list of future times points intervaled by {interval_min} for {hours}
