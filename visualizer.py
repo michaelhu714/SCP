@@ -35,7 +35,7 @@ def get_ground_tracks(satellites, hours=1, interval_minutes=10):
         }
     return tracks, current_positions
 
-def plot_orbits_plotly(tracks, current_positions=None):
+def plot_orbits_plotly(tracks, current_positions=None, projection_type="equirectangular"):
     """
     Plot ground tracks using Plotly (returns a go.Figure object).
     """
@@ -77,9 +77,24 @@ def plot_orbits_plotly(tracks, current_positions=None):
                 name=f"{name} (now)"
             )) 
 
+    globe.update_layout(
+        title="Satellite Ground Tracks (Flat Map)",
+        geo=dict(
+            projection_type=projection_type,  # <-- make the projection dynamic
+            showland=True,
+            landcolor="rgb(243, 243, 243)",
+            countrycolor="rgb(200, 200, 200)",
+            coastlinecolor="black",
+            showocean=True,
+            oceancolor="lightblue"
+        ),
+        margin={"r": 10, "t": 30, "l": 10, "b": 10},
+        height=600,
+    )
+
     return globe
 
-def plot_orbits_globe_plotly(tracks, current_positions=None):
+def plot_orbits_globe_plotly(tracks, current_positions=None, projection_type="equirectangular"):
     """
     Plot ground tracks on a 3D globe using Plotly (orthographic projection).
     Returns: go.Figure
@@ -119,5 +134,20 @@ def plot_orbits_globe_plotly(tracks, current_positions=None):
                 marker=dict(size=6, color="red"),
                 name=f"{name} (now)"
             )) 
+        
+    globe.update_geos(
+        projection_type=projection_type,  # <-- Here's the switch
+        showland=True, landcolor="rgb(230, 230, 230)",
+        showocean=True, oceancolor="lightblue",
+        showcoastlines=True, coastlinecolor="black",
+        showcountries=True, countrycolor="gray",
+    )
+
+    globe.update_layout(
+        title="Satellite Ground Tracks (3D Globe)",
+        margin={"r": 0, "t": 30, "l": 0, "b": 0},
+        height=700,
+    )
+    
 
     return globe

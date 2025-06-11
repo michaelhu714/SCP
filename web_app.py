@@ -18,6 +18,7 @@ if check_collisions:
     threshold_km = st.sidebar.slider("Km threshold for close approaches", min_value = 1, max_value = 1000, value = 2)
 plot_orbits = st.sidebar.toggle("Plot satellite orbits")
 if plot_orbits: 
+    projection = st.sidebar.selectbox("Map Projection", ["equirectangular", "orthographic", "azimuthal equal area"])
     globe_view = st.sidebar.checkbox("Use 3D globe view")
 
 # main logic
@@ -31,9 +32,9 @@ if st.button("Run Prediction"):
         st.subheader("Ground Track Visualization")
         tracks, positions = get_ground_tracks(subset_sats, hours=hours)
         if globe_view:
-            fig = plot_orbits_globe_plotly(tracks, positions)
+            fig = plot_orbits_globe_plotly(tracks, positions, projection)
         else:
-            fig = plot_orbits_plotly(tracks, positions)
+            fig = plot_orbits_plotly(tracks, positions, projection)
         st.plotly_chart(fig, use_container_width=True)
         
     if check_collisions:
