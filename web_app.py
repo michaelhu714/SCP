@@ -1,7 +1,7 @@
 import streamlit as st 
 from tle_downloader import fetch_tle
 from collision_checker import check_close_approaches
-from visualizer import get_ground_tracks, plot_orbits_plotly, plot_orbits_globe_plotly
+from visualizer import get_ground_tracks, plot_orbits_plotly, plot_orbits_globe_plotly, plot_orbit_animation
 
 
 # configure page
@@ -18,7 +18,8 @@ if check_collisions:
     threshold_km = st.sidebar.slider("Km threshold for close approaches", min_value = 1, max_value = 1000, value = 2)
 plot_orbits = st.sidebar.toggle("Plot satellite orbits")
 if plot_orbits: 
-    projection = st.sidebar.selectbox("Map Projection", ["equirectangular", "orthographic", "azimuthal equal area"])
+    projection = st.sidebar.selectbox("Map Projection", ["orthographic", "equirectangular", "azimuthal equal area"])
+    animate = st.sidebar.checkbox("Animate orbits")
     globe_view = st.sidebar.checkbox("Use 3D globe view")
 
 # main logic
@@ -31,11 +32,14 @@ if st.button("Run Prediction"):
     if plot_orbits: 
         st.subheader("Ground Track Visualization")
         tracks, positions = get_ground_tracks(subset_sats, hours=hours)
-        if globe_view:
-            fig = plot_orbits_globe_plotly(tracks, positions, projection)
-        else:
-            fig = plot_orbits_plotly(tracks, positions, projection)
-        st.plotly_chart(fig, use_container_width=True)
+        if animate: 
+            globe = plot_orbit_animation(tracks, projection)
+        else: 
+            if globe_view:
+                globe = plot_orbits_globe_plotly(tracks, positions, projection)
+            else:
+                globe = plot_orbits_plotly(tracks, positions, projection)
+        st.plotly_chart(globe, use_container_width=True)
         
     if check_collisions:
         warnings = check_close_approaches(subset_sats, hours=hours, threshold_km=threshold_km)

@@ -151,3 +151,82 @@ def plot_orbits_globe_plotly(tracks, current_positions=None, projection_type="eq
     
 
     return globe
+
+def plot_orbit_animation(tracks, projection_type="orthographic"):
+
+    globe = go.Figure()
+    names = list(tracks.keys())
+    steps = len(list(tracks.values())[0]["lats"])
+
+    # Initial frame (index 0)
+    for name in names:
+        globe.add_trace(go.Scattergeo(
+            lon=[tracks[name]["lons"][0]],
+            lat=[tracks[name]["lats"][0]],
+            mode="markers+text",
+            name=name,
+            text=[name],
+            marker=dict(size=6),
+            showlegend=False
+        ))
+
+    # Generate frames with trails
+    frames = []
+    for i in range(1, steps):
+        frame_data = []
+        for name in names:
+            # Trail: from start up to current frame
+            trail_lons = tracks[name]["lons"][:i+1]
+            trail_lats = tracks[name]["lats"][:i+1]
+
+            # Add trail line
+            frame_data.append(go.Scattergeo(
+                lon=trail_lons,
+                lat=trail_lats,
+                mode="lines",
+                line=dict(width=1.5, color="gray"),
+                showlegend=False
+            ))
+
+            # Add current position marker
+            frame_data.append(go.Scattergeo(
+                lon=[trail_lons[-1]],
+                lat=[trail_lats[-1]],
+                mode="markers+text",
+                marker=dict(size=6, color="red"),
+                text=[name],
+                showlegend=False
+            ))
+
+        frames.append(go.Frame(data=frame_data, name=str(i)))
+
+    globe.frames = frames
+
+    globe.update_layout(
+        title="Animated Satellite Positions (with Trails)",
+        geo=dict(
+            projection_type=projection_type,
+            showland=True,
+            landcolor="lightgray",
+            showocean=True,
+            oceancolor="lightblue",
+            coastlinecolor="black",
+        ),
+        updatemenus=[dict(
+            type="buttons",
+            showactive=False,
+            buttons=[
+                dict(label="Play", method="animate", args=[None]),
+                dict(label="Pause", method="animate", args=[[None], {"mode": "immediate", "frame": {"duration": 0}, "transition": {"duration": 0}}])
+            ]
+        )],
+        sliders=[dict(
+            steps=[dict(method="animate", args=[[str(i)]], label=f"{i}") for i in range(1, steps)],
+            transition=dict(duration=0),
+            x=0, y=0, len=1.0
+        )],
+        height=700,
+        margin=dict(r=0, l=0, t=30, b=0)
+    )
+
+    return globe
