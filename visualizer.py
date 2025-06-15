@@ -314,28 +314,61 @@ def plot_orbits_3d_globe(satellites, ts, radius=1.0):
     )
     return fig
 
-def generate_starfield(num_stars=500, radius=1.5):
-    np.random.seed(42)
-    phi = np.random.uniform(0, 2 * np.pi, num_stars)
-    costheta = np.random.uniform(-1, 1, num_stars)
-    theta = np.arccos(costheta)
+def create_star_field(num_stars=1000, radius=20000):
+    # Generate random points on a sphere shell at large radius
+    phi = np.random.uniform(0, np.pi, num_stars)
+    theta = np.random.uniform(0, 2 * np.pi, num_stars)
 
-    x = radius * np.sin(theta) * np.cos(phi)
-    y = radius * np.sin(theta) * np.sin(phi)
-    z = radius * costheta
+    x = radius * np.sin(phi) * np.cos(theta)
+    y = radius * np.sin(phi) * np.sin(theta)
+    z = radius * np.cos(phi)
 
-    sizes = np.random.uniform(1, 3, num_stars)
-    brightness = np.random.uniform(0.2, 1, num_stars)
-    colors = [f"rgba(255, 255, 255, {b:.2f})" for b in brightness]
-
-    return go.Scatter3d(
+    stars = go.Scatter3d(
         x=x, y=y, z=z,
         mode='markers',
         marker=dict(
-            size=sizes,
-            color=colors,
-            opacity=1.0
+            size=1,
+            color='white',
+            opacity=0.8,
         ),
-        hoverinfo='skip',
-        showlegend=False
+        showlegend=False,
+        name='Stars',
     )
+    return stars
+
+def plot_live_satellites_3d(satellites):
+    ts = load.timescale()
+    now = ts.now()
+
+    globe = go.Figure()
+    globe.add_trace(create_star_field(num_stars=1000, radius=20000))
+    globe.add_trace(create_earth_sphere(radius=6371, resolution=100))  # realistic textured Earth
+    # globe.add_trace(add_sun_to_scene())  # optional sun
+
+    for name, sat in satellites.items():
+        geocentric = sat.at(now)
+        lat, lon = wgs84.latlon_of(geocentric)
+        subpoint = wgs84.subpoint(geocentric)
+
+        x, y, z = geocentric.position.km
+        globe.add_trace(go.Scatter3d(
+            x=[x], y=[y], z=[z],
+            mode="markers+text",
+            marker=dict(size=4, color="red"),
+            text=[name],
+            name=name,
+            showlegend=False
+        ))
+
+    globe.update_layout(
+        scene=dict(
+            xaxis=dict(showbackground=False),
+            yaxis=dict(showbackground=False),
+            zaxis=dict(showbackground=False),
+            aspectmode='data',
+            camera=dict(eye=dict(x=1.25, y=1.25, z=1.25))
+        ),
+        margin=dict(l=0, r=0, t=30, b=0),
+        title="Live 3D Satellite Positions"
+    )
+    return globe

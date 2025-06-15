@@ -6,9 +6,11 @@ from visualizer import (
     plot_orbits_plotly, 
     plot_orbits_globe_plotly, 
     plot_orbit_animation, 
-    plot_orbits_3d_globe
+    plot_orbits_3d_globe,
+    plot_live_satellites_3d
 )
 from skyfield.api import load
+import time 
 
 # configure page
 st.set_page_config(page_title="Satellite Collision Predictor", layout="wide")
@@ -28,12 +30,24 @@ if plot_orbits:
     globe_view = st.sidebar.checkbox("Use 3D globe view")
 
 # main logic
-if st.button("Run Prediction"): 
+# Add another toggle
+live_mode = st.sidebar.checkbox("Enable live 3D satellite tracking")
+
+if st.button("Run Prediction"):
     st.info("Fetching TLE data and running analysis...")
     all_sats = fetch_tle()
     subset_sats = {k: all_sats[k] for k in list(all_sats)[:num_sats]} 
 
     ts = load.timescale()  # Needed for 3d plot function
+    if live_mode and globe_view:
+        st.subheader("Live Satellite Visualization (3D Globe)")
+        plot_placeholder = st.empty()  # Reserve space to re-render plot
+
+        for _ in range(200):  # Run for ~200 cycles (~10 minutes)
+            fig = plot_live_satellites_3d(subset_sats)
+            plot_placeholder.plotly_chart(fig, use_container_width=True)
+            time.sleep(3)  # update every 3 seconds
+    
 
     if plot_orbits: 
         st.subheader("Ground Track Visualization")
