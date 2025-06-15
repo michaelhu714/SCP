@@ -4,11 +4,6 @@ from tle_downloader import fetch_tle
 from datetime import timedelta, datetime
 import numpy as np
 
-import plotly.graph_objects as go 
-from skyfield.api import load, wgs84
-from tle_downloader import fetch_tle
-from datetime import timedelta
-
 def get_ground_tracks(satellites, hours=1, interval_minutes=10):
     """
     Compute ground tracks (lat, lon) for each satellite over time.
@@ -287,7 +282,7 @@ def create_earth_sphere(radius=1.0, resolution=100):
 
 def plot_orbits_3d_globe(satellites, ts, radius=1.0):
     fig = go.Figure()
-    fig.add_trace(generate_starfield(num_stars=1000, radius=2.5))
+    fig.add_trace(generate_starfield(radius=2.5, num_stars=1000))
     fig.add_trace(create_earth_sphere(radius=radius))
 
     now = ts.now()
@@ -314,7 +309,7 @@ def plot_orbits_3d_globe(satellites, ts, radius=1.0):
     )
     return fig
 
-def generate_starfield(num_stars=500, radius=1.5):
+def generate_starfield(radius, num_stars=500):
     np.random.seed(42)
     phi = np.random.uniform(0, 2 * np.pi, num_stars)
     costheta = np.random.uniform(-1, 1, num_stars)
@@ -329,7 +324,7 @@ def generate_starfield(num_stars=500, radius=1.5):
     colors = [f"rgba(255, 255, 255, {b:.2f})" for b in brightness]
 
     return go.Scatter3d(
-        x=x, y=y, z=z,
+        x=x*2, y=y*2, z=z*2,
         mode='markers',
         marker=dict(
             size=sizes,
