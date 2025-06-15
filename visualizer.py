@@ -280,10 +280,28 @@ def create_earth_sphere(radius=1.0, resolution=100):
         name='Earth'
     )
 
+def add_sun_to_scene(fig, distance=5):
+    sun_trace = go.Scatter3d(
+        x=[distance],
+        y=[0],
+        z=[0],
+        mode="markers",
+        marker=dict(
+            size=70,  # Adjust size visually
+            color="yellow",
+            opacity=0.9
+        ),
+        name="Sun",
+        hoverinfo="text",
+        text=["Sun"]
+    )
+    fig.add_trace(sun_trace)
+
 def plot_orbits_3d_globe(satellites, ts, radius=1.0):
     fig = go.Figure()
     fig.add_trace(generate_starfield(radius=2.5, num_stars=1000))
     fig.add_trace(create_earth_sphere(radius=radius))
+    add_sun_to_scene(fig)
 
     now = ts.now()
     for name, sat in satellites.items():
