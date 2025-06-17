@@ -1,3 +1,4 @@
+#callbacks.py
 from dash import Input, Output
 import plotly.graph_objects as go
 from skyfield.api import load, wgs84
@@ -10,6 +11,13 @@ ts = load.timescale()
 # Callback to update satellite positions
 
 def register_callbacks(app):
+    @app.callback(
+    Output("sidebar", "is_open"),
+    Input("sidebar-toggle", "n_clicks"),
+    prevent_initial_call=True
+)
+    def toggle_sidebar(n):
+        return True if n % 2 == 1 else False
 
     @app.callback(
         Output("live-globe", "figure"),
@@ -25,9 +33,7 @@ def register_callbacks(app):
 
         for name, sat in list(tle_data.items())[:10]:
             geocentric = sat.at(now)
-            lat, lon = wgs84.latlon_of(geocentric)
-            subpoint = wgs84.subpoint(geocentric)
-            x, y, z = subpoint.itrs().position.km
+            x, y, z = geocentric.position.km
 
             fig.add_trace(go.Scatter3d(
                 x=[x], y=[y], z=[z],
@@ -50,3 +56,5 @@ def register_callbacks(app):
         )
 
         return fig
+    
+

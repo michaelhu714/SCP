@@ -4,11 +4,6 @@ from tle_downloader import fetch_tle
 from datetime import timedelta, datetime
 import numpy as np
 
-import plotly.graph_objects as go 
-from skyfield.api import load, wgs84
-from tle_downloader import fetch_tle
-from datetime import timedelta
-
 def get_ground_tracks(satellites, hours=1, interval_minutes=10):
     """
     Compute ground tracks (lat, lon) for each satellite over time.
@@ -270,13 +265,15 @@ def latlon_to_cartesian(lat, lon, alt_km=0, radius=1.0):
     z = r * np.sin(lat_rad)
     return x, y, z
 
-def create_earth_sphere(radius=1.0, resolution=100):
+def create_earth_sphere(radius=6371, resolution=100):
+
     theta = np.linspace(0, 2 * np.pi, resolution)
     phi = np.linspace(0, np.pi, resolution)
     theta, phi = np.meshgrid(theta, phi)
     x = radius * np.sin(phi) * np.cos(theta)
     y = radius * np.sin(phi) * np.sin(theta)
     z = radius * np.cos(phi)
+
     return go.Surface(
         x=x, y=y, z=z,
         colorscale=[[0, 'blue'], [1, 'blue']],
@@ -284,6 +281,7 @@ def create_earth_sphere(radius=1.0, resolution=100):
         showscale=False,
         name='Earth'
     )
+
 
 def plot_orbits_3d_globe(satellites, ts, radius=1.0):
     fig = go.Figure()

@@ -1,9 +1,12 @@
 from dash import html, dcc
+import dash_bootstrap_components as dbc
 
-layout = html.Div([
-    html.H1("Satellite Collision Predictor", style={"textAlign": "center"}),
+# Off-canvas sidebar for controls
+sidebar = dbc.Offcanvas(
+    [
+        html.H5("Controls", className="offcanvas-title"),
+        html.Hr(),
 
-    html.Div([
         html.Label("Number of Satellites"),
         dcc.Slider(id="num-sats", min=3, max=15, step=1, value=10,
                    marks={i: str(i) for i in range(3, 16)}),
@@ -26,13 +29,31 @@ layout = html.Div([
         html.Label("Close Approach Threshold (km)"),
         dcc.Slider(id="threshold", min=1, max=1000, step=1, value=2,
                    marks={i: str(i) for i in range(0, 1001, 200)})
-    ], style={"width": "25%", "float": "left", "padding": "20px"}),
+    ],
+    id="sidebar",
+    title="Satellite Controls",
+    placement="start",
+    is_open=False,
+)
 
-    html.Div([
-        dcc.Graph(id="orbit-graph"),
-        html.Div(id="warnings")
-    ], style={"width": "70%", "float": "right", "padding": "20px"}),
+# Main layout
+layout = dbc.Container([
+    dbc.Navbar(
+        dbc.Container([
+            dbc.NavbarBrand("Live Satellite Tracker", className="ms-2"),
+            dbc.Button("☰ Controls", id="sidebar-toggle", n_clicks=0, color="primary"),
+        ]),
+        color="dark",
+        dark=True
+    ),
 
-    dcc.Interval(id="interval-component", interval=10000, n_intervals=0)  # update every 10 seconds
-])
+    sidebar,
 
+    dcc.Graph(
+        id="live-globe",
+        config={"displayModeBar": True},
+        style={"height": "92vh", "backgroundColor": "black"}
+    ),
+
+    dcc.Interval(id="interval-component", interval=10000, n_intervals=0),
+], fluid=True)
