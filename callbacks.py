@@ -45,10 +45,11 @@ def register_callbacks(app):
         fig.update_layout(
             margin=dict(l=0, r=0, t=0, b=0),
             scene=dict(
-                xaxis=dict(showbackground=False),
-                yaxis=dict(showbackground=False),
-                zaxis=dict(showbackground=False),
-                aspectmode='data'
+                xaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
+                yaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
+                zaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
+                aspectmode='data',
+                camera = dict(eye=dict(x=.4, y=.4, z=0.4))
             ),
             showlegend=False,
             paper_bgcolor='black',

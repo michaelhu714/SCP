@@ -302,9 +302,9 @@ def plot_orbits_3d_globe(satellites, ts, radius=1.0):
 
     fig.update_layout(
         scene=dict(
-            xaxis=dict(showbackground=False),
-            yaxis=dict(showbackground=False),
-            zaxis=dict(showbackground=False),
+            xaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
+            yaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
+            zaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
             aspectmode='data'
         ),
         margin=dict(r=0, l=0, b=0, t=30),
@@ -312,7 +312,7 @@ def plot_orbits_3d_globe(satellites, ts, radius=1.0):
     )
     return fig
 
-def create_star_field(num_stars=1000, radius=20000):
+def create_star_field(num_stars=1000, radius=40000):
     # Generate random points on a sphere shell at large radius
     phi = np.random.uniform(0, np.pi, num_stars)
     theta = np.random.uniform(0, 2 * np.pi, num_stars)
@@ -360,9 +360,9 @@ def plot_live_satellites_3d(satellites):
 
     globe.update_layout(
         scene=dict(
-            xaxis=dict(showbackground=False),
-            yaxis=dict(showbackground=False),
-            zaxis=dict(showbackground=False),
+            xaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
+            yaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
+            zaxis=dict(showbackground=False, visible=False, showgrid=False, zeroline=False),
             aspectmode='data',
             camera=dict(eye=dict(x=1.25, y=1.25, z=1.25))
         ),
