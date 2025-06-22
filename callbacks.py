@@ -19,6 +19,7 @@ def register_callbacks(app):
         now = ts.now()
 
         fig = go.Figure()
+        
         fig.add_trace(create_earth_sphere())
         fig.add_trace(create_star_field())
 
@@ -74,3 +75,43 @@ def register_callbacks(app):
         State("live-globe", "figure"),
         prevent_initial_call = True
     )
+
+    # Sidebar toggle
+    @app.callback(
+        Output("sidebar", "style"),
+        Input("toggle-sidebar", "n_clicks"),
+        State("sidebar", "style")
+    )
+    def toggle_sidebar(n_clicks, style):
+        if n_clicks % 2 == 1:
+            style["display"] = "none"
+        else:
+            style["display"] = "block"
+        return style
+
+    # Terminal window show/hide
+    @app.callback(
+        Output("terminal-window", "style"),
+        Input("check-approaches", "value"),
+        State("terminal-window", "style")
+    )
+    def toggle_terminal(check_values, style):
+        if "check" in check_values:
+            style["display"] = "block"
+        else:
+            style["display"] = "none"
+        return style
+    
+    @app.callback(
+        Output("terminal-window", "children"),
+        Input("satellite-data", "data"),
+        Input("check-approaches", "value")
+    )
+    def update_terminal(sat_data, check_values):
+        if "check" in check_values:
+            # For now — simple fake message
+            return "Checking for close approaches...\nNo close approaches detected."
+        else:
+            return "Terminal ready..."
+
+    
