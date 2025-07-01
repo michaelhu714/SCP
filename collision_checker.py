@@ -1,3 +1,4 @@
+# collion checker
 from skyfield.api import load, wgs84
 from tle_downloader import fetch_tle
 import numpy as np 

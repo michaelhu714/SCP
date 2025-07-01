@@ -1,7 +1,7 @@
 import argparse
 from tle_downloader import fetch_tle
 from web_app_prototype.orbit_propagator import get_satellite_position
-from web_app_prototype.collision_checker import check_close_approaches
+from collision_checker import check_close_approaches
 from visualizer import plot_satellite_orbits
 
 def main():   

@@ -1,6 +1,6 @@
 import streamlit as st 
 from tle_downloader import fetch_tle
-from web_app_prototype.collision_checker import check_close_approaches
+from collision_checker import check_close_approaches
 from visualizer import (
     get_ground_tracks, 
     plot_orbits_plotly, 
