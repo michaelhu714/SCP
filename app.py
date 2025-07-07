@@ -1,8 +1,8 @@
 # app.py
 from dash import Dash
 import dash_bootstrap_components as dbc
-from layout import layout
-from callbacks import register_callbacks
+from src.layout import layout
+from src.callbacks import register_callbacks
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 app.title = "Live Satellite Tracker"

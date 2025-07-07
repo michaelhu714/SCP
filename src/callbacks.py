@@ -1,9 +1,9 @@
 from dash import Input, Output, State
 import plotly.graph_objects as go
 from skyfield.api import load, wgs84
-from tle_downloader import fetch_tle
-from visualizer import create_earth_sphere, create_star_field
-from collision_checker import check_close_approaches
+from src.tle_downloader import fetch_tle
+from src.visualizer import create_earth_sphere, create_star_field
+from src.collision_checker import check_close_approaches
 
 # Load timescale once globally
 ts = load.timescale()

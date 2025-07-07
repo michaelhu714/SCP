@@ -1,6 +1,6 @@
 # collion checker
 from skyfield.api import load, wgs84
-from tle_downloader import fetch_tle
+from src.tle_downloader import fetch_tle
 import numpy as np 
 from itertools import combinations # helps generate all unique satellite pairs without repetition
 from datetime import timedelta
